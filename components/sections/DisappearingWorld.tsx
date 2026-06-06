@@ -1,8 +1,12 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useMotionTemplate,
+} from "framer-motion";
 import { useRef } from "react";
-import Image from "next/image";
 import Eyebrow from "@/components/ui/Eyebrow";
 import Reveal from "@/components/ui/Reveal";
 
@@ -12,45 +16,43 @@ export default function DisappearingWorld() {
     target: ref,
     offset: ["start end", "end start"],
   });
-  // Complementary crossfade (same photo, colour -> drained) so a full image is
-  // always visible — no washed-out gap where the page background shows through.
-  const lush = useTransform(scrollYProgress, [0.2, 0.55], [1, 0]);
-  const cleared = useTransform(scrollYProgress, [0.2, 0.55], [0, 1]);
+  // Drain the living forest of colour and light as the section scrolls.
+  const gray = useTransform(scrollYProgress, [0.2, 0.6], [0, 1]);
+  const bright = useTransform(scrollYProgress, [0.2, 0.6], [1, 0.68]);
+  const filter = useMotionTemplate`grayscale(${gray}) brightness(${bright})`;
+  const lush = useTransform(scrollYProgress, [0.25, 0.5], [1, 0]);
+  const cleared = useTransform(scrollYProgress, [0.4, 0.6], [0, 1]);
 
   return (
     <section className="relative bg-ivory px-6 py-section md:px-10" ref={ref}>
       <div className="mx-auto grid max-w-content items-center gap-16 md:grid-cols-2 md:gap-24">
-        {/* Sticky media — the world before and after */}
-        <div className="relative aspect-[4/5] overflow-hidden rounded-[3px] md:sticky md:top-24">
-          {/* ONCE — a living world (full colour) */}
-          <motion.div style={{ opacity: lush }} className="absolute inset-0">
-            <Image
-              src="/cows/kamadhenu.webp"
-              alt="A living world"
-              fill
-              sizes="(max-width:768px) 100vw, 50vw"
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-forest/40 to-transparent" />
-            <span className="absolute bottom-6 left-6 text-xs uppercase tracking-[0.2em] text-ivory/90">
-              Once — a living world
-            </span>
-          </motion.div>
-          {/* NOW — optimised, emptied (drained of colour and light) */}
-          <motion.div style={{ opacity: cleared }} className="absolute inset-0">
-            <Image
-              src="/cows/kamadhenu.webp"
-              alt="The emptied world"
-              fill
-              sizes="(max-width:768px) 100vw, 50vw"
-              className="object-cover grayscale brightness-[0.7] contrast-[0.9]"
-            />
-            <div className="absolute inset-0 bg-[#b6a988]/45 mix-blend-luminosity" />
-            <div className="grain opacity-25" />
-            <span className="absolute bottom-6 left-6 text-xs uppercase tracking-[0.2em] text-ivory/80">
-              Now — optimised, emptied
-            </span>
-          </motion.div>
+        {/* Sticky media — a living forest, drained as you scroll */}
+        <div className="relative aspect-[4/5] overflow-hidden rounded-[3px] bg-forest-deep md:sticky md:top-24">
+          <motion.video
+            style={{ filter }}
+            className="absolute inset-0 h-full w-full object-cover"
+            autoPlay
+            muted
+            loop
+            playsInline
+          >
+            <source src="/forest.mp4" type="video/mp4" />
+          </motion.video>
+          <div className="absolute inset-0 bg-gradient-to-t from-forest/50 to-transparent" />
+          <div className="grain opacity-20" />
+          {/* Labels cross-fade */}
+          <motion.span
+            style={{ opacity: lush }}
+            className="absolute bottom-6 left-6 text-xs uppercase tracking-[0.2em] text-ivory/90"
+          >
+            Once — a living forest
+          </motion.span>
+          <motion.span
+            style={{ opacity: cleared }}
+            className="absolute bottom-6 left-6 text-xs uppercase tracking-[0.2em] text-ivory/90"
+          >
+            Now — optimised, emptied
+          </motion.span>
           <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-charcoal/10" />
         </div>
 
