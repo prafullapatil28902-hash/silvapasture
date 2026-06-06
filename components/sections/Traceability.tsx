@@ -57,34 +57,22 @@ export default function Traceability() {
             data-hover
             className="group mx-auto flex aspect-square max-w-sm flex-col items-center justify-center rounded-sm border border-charcoal/10 bg-ivory p-10 text-center shadow-sm transition-colors duration-500 hover:border-gold"
           >
-            <QR />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/qr/batch-SP-0042.svg"
+              alt="Scan to trace batch SP-0042"
+              width={190}
+              height={190}
+            />
             <p className="serif mt-8 text-xl text-forest transition-colors group-hover:text-gold">
               Scan to trace
             </p>
             <p className="mt-1 text-xs uppercase tracking-[0.2em] text-charcoal/50">
-              silvapasture.com/trace/SP-0042
+              silvapasture.in/trace/SP-0042
             </p>
           </Link>
         </Reveal>
       </div>
     </section>
-  );
-}
-
-function QR() {
-  // Decorative deterministic QR-like grid
-  const cells = Array.from({ length: 169 }, (_, i) => (i * 73 + 17) % 5 < 2);
-  return (
-    <div
-      className="grid gap-[3px]"
-      style={{ width: 200, gridTemplateColumns: "repeat(13, minmax(0, 1fr))" }}
-    >
-      {cells.map((on, i) => (
-        <span
-          key={i}
-          className={`aspect-square ${on ? "bg-forest" : "bg-transparent"}`}
-        />
-      ))}
-    </div>
   );
 }

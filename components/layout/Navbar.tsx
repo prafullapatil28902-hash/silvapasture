@@ -6,8 +6,9 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 const links = [
-  { label: "Ecosystem", href: "/#ecosystem" },
-  { label: "Journey", href: "/#journey" },
+  { label: "The Herd", href: "/cows" },
+  { label: "Diary", href: "/diary" },
+  { label: "The Vault", href: "/vault" },
   { label: "Impact", href: "/#impact" },
   { label: "The Ghee", href: "/#product" },
   { label: "Journal", href: "/#journal" },

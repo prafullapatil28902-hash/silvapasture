@@ -33,7 +33,7 @@ export default function HeroCinematic() {
           playsInline
           poster="/product-hero.webp"
         >
-          <source src="/forest.mp4" type="video/mp4" />
+          <source src="/hero.mp4" type="video/mp4" />
         </video>
         {/* cinematic grade + vignette */}
         <div className="absolute inset-0 bg-gradient-to-b from-obsidian/50 via-obsidian/20 to-obsidian/80" />

@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Eyebrow from "@/components/ui/Eyebrow";
+import { cows, type Cow } from "@/lib/data/cows";
 
 const PRICE = 4800;
 
@@ -13,6 +14,13 @@ export default function ReserveFlow() {
   const [qty, setQty] = useState(1);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [cow, setCow] = useState<Cow | null>(null);
+
+  // Read ?cow= without useSearchParams so the page stays statically prerenderable.
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get("cow");
+    if (id && cows[id]) setCow(cows[id]);
+  }, []);
 
   const acres = (qty * 0.3).toFixed(1);
   const valid = name.trim().length > 1 && /\S+@\S+\.\S+/.test(email);
@@ -23,18 +31,24 @@ export default function ReserveFlow() {
         {/* Visual side */}
         <div className="relative hidden lg:block">
           <Image
-            src="/product-hero.webp"
-            alt="Silvapasture Bilona Ghee"
+            src={cow ? cow.hero : "/product-hero.webp"}
+            alt={cow ? cow.name : "Silvapasture Bilona Ghee"}
             fill
             sizes="50vw"
             className="object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-obsidian/30 to-obsidian/80" />
           <blockquote className="absolute bottom-12 left-12 right-12">
-            <p className="serif text-2xl italic leading-snug text-ivory/90">
-              “When nothing is forced, purity does not need to be created — it
-              simply remains.”
-            </p>
+            {cow ? (
+              <p className="serif text-2xl italic leading-snug text-ivory/90">
+                Reserving the yield of {cow.name} — {cow.breed} of {cow.village}.
+              </p>
+            ) : (
+              <p className="serif text-2xl italic leading-snug text-ivory/90">
+                “When nothing is forced, purity does not need to be created — it
+                simply remains.”
+              </p>
+            )}
           </blockquote>
         </div>
 
@@ -50,8 +64,22 @@ export default function ReserveFlow() {
                 transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               >
                 <Eyebrow>Reservation</Eyebrow>
+                {cow && (
+                  <Link
+                    href={`/cows/${cow.id}`}
+                    className="mt-5 inline-flex items-center gap-3 rounded-full border border-gold/30 bg-gold/5 py-1.5 pl-1.5 pr-4 text-sm transition-colors hover:border-gold/60"
+                  >
+                    <span className="relative h-7 w-7 overflow-hidden rounded-full">
+                      <Image src={cow.hero} alt={cow.name} fill sizes="28px" className="object-cover" />
+                    </span>
+                    <span className="text-ivory/80">
+                      Founders Reserve from{" "}
+                      <span className="text-gold-bright">{cow.name}</span>
+                    </span>
+                  </Link>
+                )}
                 <h1 className="serif mt-6 text-[clamp(2.2rem,4vw,3.6rem)] font-light leading-tight">
-                  Reserve from a single season
+                  {cow ? `Reserve ${cow.name}'s yield` : "Reserve from a single season"}
                 </h1>
                 <p className="mt-4 max-w-md text-ivory/65">
                   Production is finite and seasonal. A reservation secures your
@@ -161,22 +189,26 @@ export default function ReserveFlow() {
                       v={`${Math.max(1, Math.round(qty * 0.5))}`}
                     />
                     <ReceiptRow k="Indigenous cows protected" v={`${qty * 2}`} />
-                    <ReceiptRow k="Batch" v="SP-0042 · Athgarh" />
+                    {cow && <ReceiptRow k="Your cow" v={`${cow.name} · ${cow.village}`} />}
+                    <ReceiptRow
+                      k="Batch"
+                      v={cow?.batchIds[0] ?? "SP-0042 · Athgarh"}
+                    />
                   </ul>
                 </div>
 
                 <div className="mt-10 flex flex-wrap gap-5">
                   <Link
-                    href="/trace/SP-0042"
+                    href={cow ? `/cows/${cow.id}` : "/trace/SP-0042"}
                     className="border border-gold/50 px-8 py-4 text-[0.8rem] uppercase tracking-[0.18em] text-ivory transition-all duration-500 ease-silk hover:border-gold hover:bg-gold/10"
                   >
-                    Trace your batch
+                    {cow ? `Follow ${cow.name}` : "Trace your batch"}
                   </Link>
                   <Link
-                    href="/"
+                    href="/orders/ORD-1042"
                     className="px-8 py-4 text-[0.8rem] uppercase tracking-[0.18em] text-ivory/70 transition-colors hover:text-ivory"
                   >
-                    Return home →
+                    Track your order →
                   </Link>
                 </div>
               </motion.div>
