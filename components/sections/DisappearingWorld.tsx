@@ -2,6 +2,7 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
+import Image from "next/image";
 import Eyebrow from "@/components/ui/Eyebrow";
 import Reveal from "@/components/ui/Reveal";
 
@@ -11,26 +12,42 @@ export default function DisappearingWorld() {
     target: ref,
     offset: ["start end", "end start"],
   });
-  // crossfade from lush -> cleared as the section scrolls
-  const lush = useTransform(scrollYProgress, [0.1, 0.55], [1, 0]);
-  const cleared = useTransform(scrollYProgress, [0.35, 0.8], [0, 1]);
+  // Complementary crossfade (same photo, colour -> drained) so a full image is
+  // always visible — no washed-out gap where the page background shows through.
+  const lush = useTransform(scrollYProgress, [0.2, 0.55], [1, 0]);
+  const cleared = useTransform(scrollYProgress, [0.2, 0.55], [0, 1]);
 
   return (
     <section className="relative bg-ivory px-6 py-section md:px-10" ref={ref}>
       <div className="mx-auto grid max-w-content items-center gap-16 md:grid-cols-2 md:gap-24">
         {/* Sticky media — the world before and after */}
-        <div className="relative aspect-[4/5] overflow-hidden md:sticky md:top-24">
+        <div className="relative aspect-[4/5] overflow-hidden rounded-[3px] md:sticky md:top-24">
+          {/* ONCE — a living world (full colour) */}
           <motion.div style={{ opacity: lush }} className="absolute inset-0">
-            <div className="absolute inset-0 bg-gradient-to-b from-[#1e4d36] via-[#143a2b] to-[#0f2b20]" />
-            <div className="mist" />
-            <span className="absolute bottom-6 left-6 text-xs uppercase tracking-[0.2em] text-ivory/70">
-              Once — a living forest
+            <Image
+              src="/cows/kamadhenu.webp"
+              alt="A living world"
+              fill
+              sizes="(max-width:768px) 100vw, 50vw"
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-forest/40 to-transparent" />
+            <span className="absolute bottom-6 left-6 text-xs uppercase tracking-[0.2em] text-ivory/90">
+              Once — a living world
             </span>
           </motion.div>
+          {/* NOW — optimised, emptied (drained of colour and light) */}
           <motion.div style={{ opacity: cleared }} className="absolute inset-0">
-            <div className="absolute inset-0 bg-gradient-to-b from-[#cac0a6] via-[#b6a988] to-[#8a7e63]" />
-            <div className="grain opacity-20" />
-            <span className="absolute bottom-6 left-6 text-xs uppercase tracking-[0.2em] text-charcoal/60">
+            <Image
+              src="/cows/kamadhenu.webp"
+              alt="The emptied world"
+              fill
+              sizes="(max-width:768px) 100vw, 50vw"
+              className="object-cover grayscale brightness-[0.7] contrast-[0.9]"
+            />
+            <div className="absolute inset-0 bg-[#b6a988]/45 mix-blend-luminosity" />
+            <div className="grain opacity-25" />
+            <span className="absolute bottom-6 left-6 text-xs uppercase tracking-[0.2em] text-ivory/80">
               Now — optimised, emptied
             </span>
           </motion.div>
